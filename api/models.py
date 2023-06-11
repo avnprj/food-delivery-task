@@ -68,11 +68,19 @@ class User(AbstractUser):
     
 
 class Order(BaseModel):
+    STATUS_CHOICES = (
+        ('pending', _('Pending')),
+        ('confirmed', _('Confirmed')),
+        ('preparation', _('In Preparation')),
+        ('dispatched', _('Dispatched')),
+        ('delivered', _('Delivered')),
+    )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     menu_items = models.ManyToManyField(MenuItem)
     quantity = models.PositiveIntegerField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
     class Meta:
         db_table = 'order'
