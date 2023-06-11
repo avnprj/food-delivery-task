@@ -1,0 +1,13 @@
+{% extends "drf_yasg/swagger-ui.html" %}
+
+{% block extrascripts %}
+{{ block.super }}
+<script>
+$(function () {
+    var url = window.location.search.match(/url=([^&]+)/);
+    if (url && url.length > 1) {
+        $('select[name="swaggerSpec"]').val(decodeURIComponent(url[1]));
+    }
+});
+</script>
+{% endblock %}
