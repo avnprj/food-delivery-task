@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework_simplejwt import views as jwt_views
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
@@ -14,7 +14,6 @@ schema_view = get_schema_view(
     public=True,
     permission_classes=(permissions.AllowAny,),
 )
-
 
 
 urlpatterns = [

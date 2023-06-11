@@ -1,9 +1,17 @@
 from django.db.models import Q
+from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAdminUser
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from .models import *
 from .serializers import *
+
+
+channel_layer = get_channel_layer()
 
 
 class IsSelfOrAdmin(BasePermission):
@@ -122,9 +130,28 @@ class OrderViewSet(viewsets.ModelViewSet):
         if user.is_authenticated:
             # Filter the orders based on the authenticated user
             queryset = Order.objects.filter(user=user)
-
+        if restaurant:
             # Filter the orders based on the restaurant
-            queryset = Order.objects.filter(restaurant=restaurant)
+            queryset = queryset.filter(restaurant=restaurant)
 
         return queryset
+    
 
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def update_order_status(request, pk):
+    # Get the new status from the request (assuming it's passed as a query parameter)
+    new_status = request.GET.get('status')
+    order = Order.objects.filter(pk=pk).update(status=new_status)
+    
+    # Trigger the order status update
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f'order_{pk}',
+        {
+            'type': 'notify_order_status',
+            'status': new_status,
+        }
+    )
+
+    return JsonResponse({'message': 'Order status update triggered successfully'})

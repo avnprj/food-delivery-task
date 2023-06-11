@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'drf_yasg',
+    'channels'
 ]
 
 # JWT Authentication Settings
@@ -103,6 +104,18 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = 'api.User'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('localhost', 6379)],
+        },
+    },
+}
+
+ASGI_APPLICATION = 'food_delivery.asgi.application'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

@@ -30,10 +30,11 @@ class UserSerializer(serializers.ModelSerializer):
         )
         return user
 
+
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['id', 'user', 'restaurant', 'menu_items', 'quantity', 'total_price']
+        fields = ['id', 'restaurant', 'menu_items', 'quantity', 'total_price']
 
     def create(self, validated_data):
         menu_items_data = validated_data.pop('menu_items')

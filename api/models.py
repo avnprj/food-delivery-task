@@ -89,4 +89,4 @@ class Order(BaseModel):
         ordering = ('-date_added',)
         
     def __str__(self):
-        return self.name
+        return f"{self.id}"
