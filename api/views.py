@@ -50,7 +50,7 @@ class RestaurantViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(name__icontains=name)
 
         if location:
-            queryset = queryset.filter(address__icontains=location)
+            queryset = queryset.filter(location__icontains=location)
 
         return queryset
 
@@ -74,19 +74,19 @@ class MenuItemViewSet(viewsets.ModelViewSet):
         cuisine = self.request.query_params.get('cuisine')
         name = self.request.query_params.get('name')
         location = self.request.query_params.get('location')
-        restaurant_id = self.request.query_params.get('restaurant_id')
+        restaurant = self.request.query_params.get('restaurant')
 
-        if restaurant_id:
-            queryset = queryset.filter(restaurant__id=restaurant_id)
+        if restaurant:
+            queryset = queryset.filter(restaurant__id=restaurant)
 
         if cuisine:
             queryset = queryset.filter(cuisine__icontains=cuisine)
 
-        if name or location:
-            queryset = queryset.filter(
-                Q(restaurant__name__icontains=name) |
-                Q(restaurant__address__icontains=location)
-            )
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+
+        if location:
+            queryset = queryset.filter(location__icontains=location)
 
         return queryset
 
@@ -122,12 +122,12 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
+        queryset = super().get_queryset()
         # Retrieve the authenticated user
         user = self.request.user
-        queryset = None
         restaurant = self.request.query_params.get('restaurant')
 
-        if user.is_authenticated:
+        if user.is_authenticated and not user.is_staff:
             # Filter the orders based on the authenticated user
             queryset = Order.objects.filter(user=user)
         if restaurant:

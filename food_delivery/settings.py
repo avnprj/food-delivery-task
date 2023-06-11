@@ -34,13 +34,9 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
-
-JWT_AUTH = {
-    'JWT_SECRET_KEY': config('JWT_SECRET_KEY'),  
-    'JWT_ALGORITHM': 'HS256',
-    'JWT_ALLOW_REFRESH': True,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
-    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=30),
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(weeks=1),  # Set expiration to one week
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=30),
 }
 
 MIDDLEWARE = [
