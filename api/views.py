@@ -16,11 +16,15 @@ channel_layer = get_channel_layer()
 
 class IsSelfOrAdmin(BasePermission):
     def has_object_permission(self, request, view, obj):
+        # Allow access if user is accessing their own profile
+        if obj == request.user:
+            return True
+        # Allow access if user is accessing their own profile in case of orders edit
+        if obj.user:
+                return obj.user == request.user
         # Allow access if user is admin
         if request.user.is_staff:
             return True
-        # Allow access if user is accessing their own profile
-        return obj == request.user
 
 
 class RestaurantViewSet(viewsets.ModelViewSet):
